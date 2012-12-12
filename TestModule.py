@@ -12,7 +12,7 @@ import httplib,urllib
 #import string  # hope we will avoid to use it  
 import re
 #from PicasaLib.XMLParse import xmlmparse 
-from XMLParse import  xmlparse 
+from XMLParse import  ListOfAlbums 
 
 
 def  GetInitialFromPicasa (AuthKey,Picasa_Url):
@@ -65,10 +65,13 @@ def GoogleAuth(login='denirz@gmail.com',password='pass'):
 
 if __name__ == '__main__':
     AuthToken=GoogleAuth('denirz@gmail.com','shevuqufiwhiz')
-    print '\n-------- google Auth Printed ', AuthToken
+    if DEBUG_LEVEL:
+        print '\n-------- google Auth Printed ', AuthToken
+        
     Picasa_Url_to_get='/data/feed/api/user/denirz'
-
     xml=GetInitialFromPicasa(AuthToken, Picasa_Url_to_get)
-    print xml
-    xmlparse(xml)
+#    print xml
+
+    for AlbName in ListOfAlbums(xml):
+            print AlbName
     pass
