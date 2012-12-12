@@ -13,29 +13,18 @@ import re
 from PicasaLib.XMLParse import  xmlparse 
 
 
-def  GetInitialFromPicasa (AuthKey):
-#    print "hello"
-#    Picasa_Host='picasaweb.google.com'
-#    Picasa_Url='/data/feed/api/user/default?kind=album'
-    Picasa_Url='/data/feed/api/user/denirz' 
-#    Picasa_Url='http://picasaweb.google.com/home'
+def  GetInitialFromPicasa (AuthKey,Picasa_Url):
     Picasa_Host='picasaweb.google.com'
     Pic_Connection=httplib.HTTPSConnection(Picasa_Host)
     Pic_Connection.set_debuglevel(DEBUG_LEVEL)
-#    print "timeout:", Pic_Connection.port
-#    QueryParameters=urllib.urlencode({'kind' :'album'})
     header=({'Authorization' : 'GoogleLogin auth='+AuthKey,
 #              "Content-type":"application/atom+xml",
 #             "Accept": "*/*"
              })
-#    Pic_Connection.set_debuglevel(6)
+    Pic_Connection.set_debuglevel(DEBUG_LEVEL)
     Pic_Connection.request("GET",Picasa_Url,'',header)
-#    Pic_Connection.
-    
-#    print " ------------------\n"
-#    r1=Pic_Connection.getresponse()
-#    print r1.read()
-    return Pic_Connection.getresponse().read()  
+    RetAnswer=Pic_Connection.getresponse()
+    return RetAnswer.read()  
 
 def GoogleAuth(login='denirz@gmail.com',password='pass'):
     GoogleLoginHost='www.google.com'
@@ -72,7 +61,9 @@ def GoogleAuth(login='denirz@gmail.com',password='pass'):
 if __name__ == '__main__':
     AuthToken=GoogleAuth('denirz@gmail.com','shevuqufiwhiz')
     print '\n-------- google Auth Printed ', AuthToken
-    xml=GetInitialFromPicasa(AuthToken)
-#    print xml
+    Picasa_Url_to_get='/data/feed/api/user/denirz'
+
+    xml=GetInitialFromPicasa(AuthToken, Picasa_Url_to_get)
+    print xml
     xmlparse(xml)
     pass
