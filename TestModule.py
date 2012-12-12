@@ -4,13 +4,15 @@ Created on Dec 9, 2012
 
 @author: denirz
 '''
+import re
+
 
 DEBUG_LEVEL=0
 import httplib,urllib
 #import string  # hope we will avoid to use it  
 import re
 #from PicasaLib.XMLParse import xmlmparse 
-from PicasaLib.XMLParse import  xmlparse 
+from XMLParse import  xmlparse 
 
 
 def  GetInitialFromPicasa (AuthKey,Picasa_Url):
@@ -42,7 +44,10 @@ def GoogleAuth(login='denirz@gmail.com',password='pass'):
 # It Looks like it doesn't work without these headers
     headers = {"Content-type": "application/x-www-form-urlencoded",
                  "Accept": "text/plain"}
-    LogConnection.request("POST",GoogleLoginUrl,AuthParams,headers)
+    try:
+        LogConnection.request("POST",GoogleLoginUrl,AuthParams,headers)
+    except httplib.HTTPResponse as ex:
+        print "Error  %s" % ex    
     Received=LogConnection.getresponse()
     '''
         Let's check if the answer is  not OK - return 0 and exit 
