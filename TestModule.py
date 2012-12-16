@@ -8,9 +8,14 @@ import re
 
 
 DEBUG_LEVEL=0
+Picasa_Host='picasaweb.google.com'
 import httplib,urllib
 #import string  # hope we will avoid to use it  
 import re
+from email.mime.multipart import MIMEMultipart, MIMEBase
+from email.mime.image import MIMEImage
+#import email.encoders as encoders
+from email import encoders
 #from PicasaLib.XMLParse import xmlmparse 
 from XMLParse import  ListOfAlbums,ListOfPhotos
 
@@ -42,8 +47,8 @@ def Album_IDfromAlbumName(AlbumName,AuthKey,Picasa_Url):
             print "not found"
         return '' 
     
-def  GetInitialFromPicasa (AuthKey,Picasa_Url):
-    Picasa_Host='picasaweb.google.com'
+def GetInitialFromPicasa (AuthKey,Picasa_Url):
+    
     Pic_Connection=httplib.HTTPSConnection(Picasa_Host)
     Pic_Connection.set_debuglevel(DEBUG_LEVEL)
     header=({'Authorization' : 'GoogleLogin auth='+AuthKey,
@@ -56,7 +61,7 @@ def  GetInitialFromPicasa (AuthKey,Picasa_Url):
     return RetAnswer.read()  
 
 
-def  xmlListOfPhotosInAlbum(Auth,PublisherUserID,AlbumID):
+def xmlListOfPhotosInAlbum(Auth,PublisherUserID,AlbumID):
     '''
     will return a list of Photos  of  the AlbumID of PUblishedUser
     '''
@@ -100,31 +105,101 @@ def GoogleAuth(login='denirz@gmail.com',password='pass'):
     AuthToken=g.groups()[0]
     return AuthToken
 
+def PostPhoto(Auth,PublisherUserID,AlbumName,PhotoPath,Title="Default Title",Summary="Set  via Picasa API"):
+# POST https://picasaweb.google.com/data/feed/api/user/userID/albumid/albumID
+#https://picasaweb.google.com/data/feed/api/user/userID/albumid/albumID
+    '''
+    Should post the file to the selecter Album
+    '''
+    ListAlbumUrl='/data/feed/api/user/'+PublisherUserID
+    AlbumID=Album_IDfromAlbumName(AlbumName,Auth,ListAlbumUrl)
+    PostUrl='/data/feed/api/user/'+PublisherUserID+'/albumid/'+AlbumID
+    print "PostUrl:",PostUrl
+    #Annotation Forming:
+    TextToMime="<entry xmlns='http://www.w3.org/2005/Atom'><title>"
+    TextToMime=TextToMime+Title
+    TextToMime=TextToMime+"</title><summary>"
+    TextToMime=TextToMime+Summary
+    TextToMime=TextToMime+"</summary><category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/photos/2007#photo'/></entry>"
 
+    # Creating a connection 
+    Pic_Connection=httplib.HTTPSConnection(Picasa_Host)
+    Pic_Connection.set_debuglevel(DEBUG_LEVEL)
+    header=({'Authorization' : 'GoogleLogin auth='+Auth,
+              "Content-type":"multipart/related;boundary=END_OF_PART",
+             "Accept": "*/*",
+             "MIME-Version":"1.0"
+             })
+
+    Msg=MIMEMultipart("related","END_OF_PART")
+
+    XmlToAdd=MIMEBase("application","atom+xml")
+    XmlToAdd.set_payload(TextToMime)
+    Msg.attach(XmlToAdd)
+
+    FilePath=PhotoPath
+#    FilePath='/Users/denirz/Pictures/Keni.jpg'
     
-if __name__ == '__main__':
+    basefile=MIMEBase("image","jpeg")
+    Fd=open(FilePath,'rb')
+    basefile.set_payload(Fd.read())
+#    encoders.encode_base64(basefile)
+    Fd.close()
+    
+    Msg.attach(basefile)
+    
+    DataToSend=Msg.as_string()
+    
+    MsgFile=open('./message.txt','w')
+    MsgFile.write(DataToSend)
+    MsgFile.close()
+#    print DataToSend()
+    
+    
+    Pic_Connection.request("POST",PostUrl,DataToSend,header)
+    RetAnswer=Pic_Connection.getresponse()
+    return RetAnswer.read()  
+    
+    
+    
+    
+
+def main():
     AuthToken=GoogleAuth('denirz@gmail.com','shevuqufiwhiz')
     if DEBUG_LEVEL:
         print '\n-------- google Auth Printed ', AuthToken
+
+ 
+    # List of albums:
     Picasa_Url_to_get='/data/feed/api/user/osoldatova@mail.ru'
     Picasa_Url_to_get='/data/feed/api/user/denirz'
     xml=GetInitialFromPicasa(AuthToken, Picasa_Url_to_get)
-    print xml
+#    print xml
     Lalbums=ListOfAlbums(xml)
-    print  Lalbums
-    for Album in Lalbums.keys():
-        print "Name:\t",Album, "AlbumID\t", Lalbums[Album]
-
+    print  "list of Albums", Lalbums
+#    for Album in Lalbums.keys():
+#        print "Name:\t",Album, "AlbumID\t", Lalbums[Album]
+        
+        
+    #Album Selection:
     AlbumN='Kondratiev'
     AlbumN='MarsEdit Images'
+    AlbumN='denirz Blog'
 #    AlbumN='8/13/11'
 #    AlbumN=u'\u041a\u0438\u0440\u0438\u0437\u043b\u0438\u0435\u0432\u044b'
     print  AlbumN
+    # AlbumID from name:
     AlbumID=Album_IDfromAlbumName(AlbumN,AuthToken,'/data/feed/api/user/denirz')
     print "AlbumID:",AlbumID
+#    List of Photo 
     xml=xmlListOfPhotosInAlbum(AuthToken,'denirz',AlbumID)
 #    print xml
     Photos=ListOfPhotos(xml)
     for i in Photos.keys():
         print i,Photos[i]
-        
+
+    print "Main:PostPhoto"
+    print PostPhoto(AuthToken,'denirz',AlbumN,'/Users/denirz/Pictures/Keni.jpg','Title','DenisSummary')
+     
+if __name__ == '__main__':
+    main()   

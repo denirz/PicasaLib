@@ -30,10 +30,6 @@ def ListOfPhotos(InputString):
         print "list of Photo XML"
         print InputString
     RootTree=ET.fromstring(InputString)
-#    f=open('./photo.xml','w')
-#    f.write(InputString)
-#    f.close
-#    print RootTree
     elements=RootTree.findall('.//{http://www.w3.org/2005/Atom}entry')
     ReturnDict={}
     for e in elements:
