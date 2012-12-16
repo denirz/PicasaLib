@@ -18,6 +18,7 @@ def ListOfAlbums(InputString):
   
     for gfotoElement in RootTree.findall('.//*/{http://schemas.google.com/photos/2007}id/..'):
         IDElement=gfotoElement.find('.//{http://schemas.google.com/photos/2007}id')
+        IDElement=gfotoElement.find('.//{http://schemas.google.com/photos/2007}id')
         TitleElement=gfotoElement.find('.//{http://www.w3.org/2005/Atom}title')
         ReturnDict[TitleElement.text]=IDElement.text
     if DEBUG_LEVEL:
