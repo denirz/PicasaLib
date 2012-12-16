@@ -37,3 +37,11 @@ def ListOfPhotos(InputString):
         Furl=e.find('./{http://search.yahoo.com/mrss/}group/{http://search.yahoo.com/mrss/}content').attrib['url']
         ReturnDict[Fid]=Furl
     return ReturnDict
+
+def UploadedPictureAddres(InputString):
+    if DEBUG_LEVEL:
+        print "just uploaded photo XML"
+        print InputString
+    RootTree=ET.fromstring(InputString)
+    ContentElement=RootTree.find('./{http://search.yahoo.com/mrss/}group/{http://search.yahoo.com/mrss/}content')
+    return  ContentElement.attrib['url']

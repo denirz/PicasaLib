@@ -17,7 +17,7 @@ from email.mime.image import MIMEImage
 #import email.encoders as encoders
 from email import encoders
 #from PicasaLib.XMLParse import xmlmparse 
-from XMLParse import  ListOfAlbums,ListOfPhotos
+from XMLParse import  ListOfAlbums,ListOfPhotos,UploadedPictureAddres
 
 def Album_IDfromAlbumName(AlbumName,AuthKey,Picasa_Url):
     '''
@@ -59,7 +59,6 @@ def GetInitialFromPicasa (AuthKey,Picasa_Url):
     Pic_Connection.request("GET",Picasa_Url,'',header)
     RetAnswer=Pic_Connection.getresponse()
     return RetAnswer.read()  
-
 
 def xmlListOfPhotosInAlbum(Auth,PublisherUserID,AlbumID):
     '''
@@ -116,6 +115,7 @@ def PostPhoto(Auth,PublisherUserID,AlbumName,PhotoPath,Title="Default Title",Sum
     PostUrl='/data/feed/api/user/'+PublisherUserID+'/albumid/'+AlbumID
     print "PostUrl:",PostUrl
     #Annotation Forming:
+    # To define a spectial Function  for that:
     TextToMime="<entry xmlns='http://www.w3.org/2005/Atom'><title>"
     TextToMime=TextToMime+Title
     TextToMime=TextToMime+"</title><summary>"
@@ -130,39 +130,42 @@ def PostPhoto(Auth,PublisherUserID,AlbumName,PhotoPath,Title="Default Title",Sum
              "Accept": "*/*",
              "MIME-Version":"1.0"
              })
-
+    
+    # Creating Multipart Container 
     Msg=MIMEMultipart("related","END_OF_PART")
-
+    # Creatinf XML part
     XmlToAdd=MIMEBase("application","atom+xml")
     XmlToAdd.set_payload(TextToMime)
     Msg.attach(XmlToAdd)
-
+    
+    #Creating Image part
     FilePath=PhotoPath
 #    FilePath='/Users/denirz/Pictures/Keni.jpg'
-    
     basefile=MIMEBase("image","jpeg")
     Fd=open(FilePath,'rb')
     basefile.set_payload(Fd.read())
-#    encoders.encode_base64(basefile)
-    Fd.close()
-    
+    Fd.close() 
     Msg.attach(basefile)
     
+    #now message is ready, so  let's  generate string to post:
     DataToSend=Msg.as_string()
+    if DEBUG_LEVEL:
+        print "see content in ./message.txt file"
+        MsgFile=open('./message.txt','w')
+        MsgFile.write(DataToSend)
+        MsgFile.close()
     
-    MsgFile=open('./message.txt','w')
-    MsgFile.write(DataToSend)
-    MsgFile.close()
-#    print DataToSend()
-    
-    
+    # now sending rewuest 
     Pic_Connection.request("POST",PostUrl,DataToSend,header)
     RetAnswer=Pic_Connection.getresponse()
-    return RetAnswer.read()  
     
+#    print RetAnswer.getheaders()
+#    xmlFilePut=open('./post.xml','wb')
+#    xmlFilePut.write(RetAnswer.read())
+#    xmlFilePut.close()
     
-    
-    
+    address=UploadedPictureAddres(RetAnswer.read())
+    return address  
 
 def main():
     AuthToken=GoogleAuth('denirz@gmail.com','shevuqufiwhiz')
@@ -199,7 +202,9 @@ def main():
         print i,Photos[i]
 
     print "Main:PostPhoto"
-    print PostPhoto(AuthToken,'denirz',AlbumN,'/Users/denirz/Pictures/Keni.jpg','Title','DenisSummary')
+    PhotoPath='/Users/denirz/Pictures/DSC_0001.JPG'
+    PhotoPath='/Users/denirz/Pictures/PanoramaDacha/PanoramaDacha1.JPG'
+    print PostPhoto(AuthToken,'denirz',AlbumN,PhotoPath,'Title','DenisSummary')
      
 if __name__ == '__main__':
     main()   
