@@ -107,6 +107,7 @@ if __name__ == '__main__':
     if DEBUG_LEVEL:
         print '\n-------- google Auth Printed ', AuthToken
     Picasa_Url_to_get='/data/feed/api/user/osoldatova@mail.ru'
+    Picasa_Url_to_get='/data/feed/api/user/denirz'
     xml=GetInitialFromPicasa(AuthToken, Picasa_Url_to_get)
     print xml
     Lalbums=ListOfAlbums(xml)
@@ -115,11 +116,15 @@ if __name__ == '__main__':
         print "Name:\t",Album, "AlbumID\t", Lalbums[Album]
 
     AlbumN='Kondratiev'
+    AlbumN='MarsEdit Images'
 #    AlbumN='8/13/11'
-    AlbumN=u'\u041a\u0438\u0440\u0438\u0437\u043b\u0438\u0435\u0432\u044b'
+#    AlbumN=u'\u041a\u0438\u0440\u0438\u0437\u043b\u0438\u0435\u0432\u044b'
     print  AlbumN
     AlbumID=Album_IDfromAlbumName(AlbumN,AuthToken,'/data/feed/api/user/denirz')
-    print AlbumID
+    print "AlbumID:",AlbumID
     xml=xmlListOfPhotosInAlbum(AuthToken,'denirz',AlbumID)
 #    print xml
-    ListOfPhotos(xml)
+    Photos=ListOfPhotos(xml)
+    for i in Photos.keys():
+        print i,Photos[i]
+        

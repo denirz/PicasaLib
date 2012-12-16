@@ -12,7 +12,6 @@ def ListOfAlbums(InputString):
     if DEBUG_LEVEL:
             print "DebuggingMode"
             print InputString
-    ReturnSet=()
     ReturnDict={}
     RootTree=ET.fromstring(InputString)
   
@@ -36,5 +35,9 @@ def ListOfPhotos(InputString):
 #    f.close
 #    print RootTree
     elements=RootTree.findall('.//{http://www.w3.org/2005/Atom}entry')
+    ReturnDict={}
     for e in elements:
-        print e.find('./{http://search.yahoo.com/mrss/}group/{http://search.yahoo.com/mrss/}content').attrib['url']
+        Fid=e.find('./{http://schemas.google.com/photos/2007}id').text
+        Furl=e.find('./{http://search.yahoo.com/mrss/}group/{http://search.yahoo.com/mrss/}content').attrib['url']
+        ReturnDict[Fid]=Furl
+    return ReturnDict
