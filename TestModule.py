@@ -46,9 +46,10 @@ def GoogleAuth(login='denirz@gmail.com',password='pass'):
                  "Accept": "text/plain"}
     try:
         LogConnection.request("POST",GoogleLoginUrl,AuthParams,headers)
-    except httplib.HTTPResponse as ex:
+        Received=LogConnection.getresponse()
+    except (httplib.HTTPException,ssl.SSLError) as ex:
         print "Error  %s" % ex    
-    Received=LogConnection.getresponse()
+#    Received=LogConnection.getresponse()
     '''
         Let's check if the answer is  not OK - return 0 and exit 
     '''
@@ -70,7 +71,7 @@ if __name__ == '__main__':
         
     Picasa_Url_to_get='/data/feed/api/user/denirz'
     xml=GetInitialFromPicasa(AuthToken, Picasa_Url_to_get)
-#    print xml
+    print xml
 
     for AlbName in ListOfAlbums(xml):
             print AlbName

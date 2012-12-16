@@ -16,6 +16,12 @@ def ListOfAlbums(InputString):
     RootTree=ET.fromstring(InputString)
     if DEBUG_LEVEL:
         ChildCount=0
+    
+    for gfotoid in RootTree.findall('.//*/{http://www.w3.org/2005/Atom}name'):
+#    for gfotoid in RootTree.findall('.//*/{http://schemas.google.com/photos/2007}gphoto:id'):    
+        
+        print gfotoid.tag
+    
     for Child in RootTree.findall('.//*/{http://www.w3.org/2005/Atom}title'):
 #        print Child.tag
         ReturnSet=ReturnSet + (Child.text,)
