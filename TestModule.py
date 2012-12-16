@@ -12,7 +12,7 @@ import httplib,urllib
 #import string  # hope we will avoid to use it  
 import re
 #from PicasaLib.XMLParse import xmlmparse 
-from XMLParse import  ListOfAlbums 
+from XMLParse import  ListOfAlbums,ListOfPhotos
 
 def Album_IDfromAlbumName(AlbumName,AuthKey,Picasa_Url):
     '''
@@ -47,13 +47,22 @@ def  GetInitialFromPicasa (AuthKey,Picasa_Url):
     Pic_Connection=httplib.HTTPSConnection(Picasa_Host)
     Pic_Connection.set_debuglevel(DEBUG_LEVEL)
     header=({'Authorization' : 'GoogleLogin auth='+AuthKey,
-#              "Content-type":"application/atom+xml",
-#             "Accept": "*/*"
+              "Content-type":"application/atom+xml",
+             "Accept": "*/*"
              })
     Pic_Connection.set_debuglevel(DEBUG_LEVEL)
     Pic_Connection.request("GET",Picasa_Url,'',header)
     RetAnswer=Pic_Connection.getresponse()
     return RetAnswer.read()  
+
+
+def  xmlListOfPhotosInAlbum(Auth,PublisherUserID,AlbumID):
+    '''
+    will return a list of Photos  of  the AlbumID of PUblishedUser
+    '''
+    GetUrl='/data/feed/api/user/'+PublisherUserID+'/albumid/'+AlbumID
+    xml=GetInitialFromPicasa(Auth,GetUrl)
+    return xml
 
 def GoogleAuth(login='denirz@gmail.com',password='pass'):
     GoogleLoginHost='www.google.com'
@@ -91,6 +100,8 @@ def GoogleAuth(login='denirz@gmail.com',password='pass'):
     AuthToken=g.groups()[0]
     return AuthToken
 
+
+    
 if __name__ == '__main__':
     AuthToken=GoogleAuth('denirz@gmail.com','shevuqufiwhiz')
     if DEBUG_LEVEL:
@@ -109,4 +120,6 @@ if __name__ == '__main__':
     print  AlbumN
     AlbumID=Album_IDfromAlbumName(AlbumN,AuthToken,'/data/feed/api/user/denirz')
     print AlbumID
-       
+    xml=xmlListOfPhotosInAlbum(AuthToken,'denirz',AlbumID)
+#    print xml
+    ListOfPhotos(xml)

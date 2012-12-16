@@ -25,3 +25,16 @@ def ListOfAlbums(InputString):
         print ReturnDict
         print "lenght is:",len(ReturnDict.keys())
     return ReturnDict
+
+def ListOfPhotos(InputString):
+    if DEBUG_LEVEL:
+        print "list of Photo XML"
+        print InputString
+    RootTree=ET.fromstring(InputString)
+#    f=open('./photo.xml','w')
+#    f.write(InputString)
+#    f.close
+#    print RootTree
+    elements=RootTree.findall('.//{http://www.w3.org/2005/Atom}entry')
+    for e in elements:
+        print e.find('./{http://search.yahoo.com/mrss/}group/{http://search.yahoo.com/mrss/}content').attrib['url']
