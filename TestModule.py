@@ -72,7 +72,6 @@ if __name__ == '__main__':
     Picasa_Url_to_get='/data/feed/api/user/denirz'
     xml=GetInitialFromPicasa(AuthToken, Picasa_Url_to_get)
     print xml
-
-    for AlbName in ListOfAlbums(xml):
-            print AlbName
-    pass
+    Lalbums=ListOfAlbums(xml)
+    for Album in Lalbums.keys():
+        print "Name:\t",Album, "AlbumID\t", Lalbums[Album]
