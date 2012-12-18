@@ -10,6 +10,7 @@ import httplib,urllib
 import ssl
 #import string  # hope we will avoid to use it  
 import re
+import optparse
 from email.mime.multipart import MIMEMultipart, MIMEBase
 #import email.encoders as encoders
 #from email import encoders
@@ -203,6 +204,46 @@ def main():
 #    PhotoPath='/Users/denirz/Pictures/PanoramaDacha/PanoramaDacha1.JPG'
     PhotoPath='/Users/denirz/Pictures/MTSMusor/DSC_0795.JPG'
     print PostPhoto(AuthToken,'denirz',AlbumN,PhotoPath,'Title','DenisSummary')
-     
+
+def ReadOptions():
+    parser=optparse.OptionParser()
+    parser.add_option("-v","--verbose",help="Verbouse output",default=0)
+    parser.add_option("-n","--name",help="Google Picasa UserName",default='denirz')
+    parser.add_option("-p","--password",help="Google Picasa Password",default='shevuqufiwhiz')
+    parser.add_option("-a","--album",help="Album in Google Picasa",default='denirz Blog')
+    parser.add_option("-t","--title",help="Picture Title",default='')
+    parser.add_option("-s","--summary",help="Picture Summary",default='Sent via Picasa Script')
+    (args,additional_args)=parser.parse_args()
+    if len( additional_args)==0:
+        print  " no file specified"
+    return (args,additional_args)
+
+def main_f():
+    (Options,Files)=ReadOptions()
+  
+    print "Files:",Files
+    print "Options:",Options
+#    print Options.name
+#    print Options.keys()
+#    print Options['name']
+    AuthToken=GoogleAuth(Options.name,Options.password)
+#    print AuthToken
+    if AuthToken==0:
+        print "Can not Auth -  Probably Invalid Username or Password"
+# picasa URL
+    UserUrl='/data/feed/api/user/'+Options.name
+    AlbumID=Album_IDfromAlbumName(Options.album,AuthToken,UserUrl)
+    if AlbumID =='':
+        print "Wrong album Name"
+        
+    print Options.album, AlbumID
+    
+    
+    
+    for File_To_Submit in Files:
+        print File_To_Submit
+
+
 if __name__ == '__main__':
-    main()   
+    main_f()
+#    main()   
