@@ -237,14 +237,16 @@ def main():
 #Let's try to authenticate:
     AuthToken=GoogleAuth(Options.name,Options.password)
 #    print AuthToken
-    if AuthToken==0:
+    if AuthToken=='0':
         print "Can not Auth -  Probably Invalid Username or Password"
+        return 0
 # Get Album Id  from Album Name:
 ##     picasa URL:
     UserUrl='/data/feed/api/user/'+Options.name
     AlbumID=Album_IDfromAlbumName(Options.album,AuthToken,UserUrl)
     if AlbumID =='':
         print "Wrong album Name"
+        return
 #    print Options.album, AlbumID
    
     for File_To_Submit in Files:
