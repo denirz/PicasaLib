@@ -165,7 +165,7 @@ def PostPhoto(Auth,PublisherUserID,AlbumName,PhotoPath,Title="Default Title",Sum
     address=UploadedPictureAddres(RetAnswer.read())
     return address  
 
-def main():
+def Test_main():
     AuthToken=GoogleAuth('denirz@gmail.com','shevuqufiwhiz')
     if DEBUG_LEVEL:
         print '\n-------- google Auth Printed ', AuthToken
@@ -206,44 +206,60 @@ def main():
     print PostPhoto(AuthToken,'denirz',AlbumN,PhotoPath,'Title','DenisSummary')
 
 def ReadOptions():
+    '''
+    Reads Command Line options and return (args, additional_args)
+    Where "additional_args" are filenames to upload 
+    '''
     parser=optparse.OptionParser()
     parser.add_option("-v","--verbose",help="Verbouse output",default=0)
     parser.add_option("-n","--name",help="Google Picasa UserName",default='denirz')
     parser.add_option("-p","--password",help="Google Picasa Password",default='shevuqufiwhiz')
     parser.add_option("-a","--album",help="Album in Google Picasa",default='denirz Blog')
     parser.add_option("-t","--title",help="Picture Title",default='')
-    parser.add_option("-s","--summary",help="Picture Summary",default='Sent via Picasa Script')
+    parser.add_option("-s","--summary",help="Picture Summary, If empty current Date will be here",default='')
     (args,additional_args)=parser.parse_args()
     if len( additional_args)==0:
         print  " no file specified"
+#    print args
     return (args,additional_args)
 
-def main_f():
+
+import time
+import os.path
+def main():
     (Options,Files)=ReadOptions()
   
-    print "Files:",Files
-    print "Options:",Options
+#    print "Files:",Files
+#    print "Options:",Options
 #    print Options.name
 #    print Options.keys()
 #    print Options['name']
+#Let's try to authenticate:
     AuthToken=GoogleAuth(Options.name,Options.password)
 #    print AuthToken
     if AuthToken==0:
         print "Can not Auth -  Probably Invalid Username or Password"
-# picasa URL
+# Get Album Id  from Album Name:
+##     picasa URL:
     UserUrl='/data/feed/api/user/'+Options.name
     AlbumID=Album_IDfromAlbumName(Options.album,AuthToken,UserUrl)
     if AlbumID =='':
         print "Wrong album Name"
+#    print Options.album, AlbumID
+    if Options.title=='':
+        Options.title=time.asctime()
         
-    print Options.album, AlbumID
-    
-    
-    
+   
     for File_To_Submit in Files:
-        print File_To_Submit
-
-
+        if os.path.isfile(File_To_Submit):
+            if Options.summary=='':
+                Summary=time.asctime()
+            else:
+                Summary=Options.summary
+            HostedUrl=PostPhoto(AuthToken,Options.name,Options.album,File_To_Submit,Options.title,Summary)
+            print File_To_Submit, HostedUrl
+        else:
+            print File_To_Submit, "is not a file" 
+        
 if __name__ == '__main__':
-    main_f()
-#    main()   
+    main()
