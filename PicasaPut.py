@@ -166,7 +166,7 @@ def PostPhoto(Auth,PublisherUserID,AlbumName,PhotoPath,Title="Default Title",Sum
     return address  
 
 def Test_main():
-    AuthToken=GoogleAuth('denirz@gmail.com','shevuqufiwhiz')
+    AuthToken=GoogleAuth('denirz@gmail.com','--')
     if DEBUG_LEVEL:
         print '\n-------- google Auth Printed ', AuthToken
 
@@ -200,9 +200,7 @@ def Test_main():
         print i,Photos[i]
 
     print "Main:PostPhoto"
-#    PhotoPath='/Users/denirz/Pictures/DSC_0001.JPG'
-#    PhotoPath='/Users/denirz/Pictures/PanoramaDacha/PanoramaDacha1.JPG'
-    PhotoPath='/Users/denirz/Pictures/MTSMusor/DSC_0795.JPG'
+#    PhotoPath='/Users/denirz/Pictures/MTSMusor/DSC_0795.JPG'
     print PostPhoto(AuthToken,'denirz',AlbumN,PhotoPath,'Title','DenisSummary')
 
 def ReadOptions():
@@ -213,7 +211,7 @@ def ReadOptions():
     parser=optparse.OptionParser()
     parser.add_option("-v","--verbose",help="Verbouse output",default=0)
     parser.add_option("-n","--name",help="Google Picasa UserName",default='denirz')
-    parser.add_option("-p","--password",help="Google Picasa Password",default='shevuqufiwhiz')
+    parser.add_option("-p","--password",help="Google Picasa Password",default='')
     parser.add_option("-a","--album",help="Album in Google Picasa",default='denirz Blog')
     parser.add_option("-t","--title",help="Picture Title",default='')
     parser.add_option("-s","--summary",help="Picture Summary, If empty current Date will be here",default='')
