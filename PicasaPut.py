@@ -246,9 +246,6 @@ def main():
     if AlbumID =='':
         print "Wrong album Name"
 #    print Options.album, AlbumID
-    if Options.title=='':
-        Options.title=time.asctime()
-        
    
     for File_To_Submit in Files:
         if os.path.isfile(File_To_Submit):
@@ -256,8 +253,9 @@ def main():
                 Summary=time.asctime()
             else:
                 Summary=Options.summary
-            HostedUrl=PostPhoto(AuthToken,Options.name,Options.album,File_To_Submit,Options.title,Summary)
-            print File_To_Submit, HostedUrl
+            Title=File_To_Submit.split('/')[-1]    
+            HostedUrl=PostPhoto(AuthToken,Options.name,Options.album,File_To_Submit,Title,Summary)
+            print "\t",File_To_Submit,"\n", HostedUrl
         else:
             print File_To_Submit, "is not a file" 
         
