@@ -86,7 +86,8 @@ def GoogleAuth(login='denirz@gmail.com',password='pass'):
         LogConnection.request("POST",GoogleLoginUrl,AuthParams,headers)
         Received=LogConnection.getresponse()
     except (httplib.HTTPException,ssl.SSLError) as ex:
-        print "Error  %s" % ex    
+        print "Error  %s" % ex
+        return 0  
 #    Received=LogConnection.getresponse()
     '''
         Let's check if the answer is  not OK - return 0 and exit 
@@ -201,6 +202,7 @@ def Test_main():
 
     print "Main:PostPhoto"
 #    PhotoPath='/Users/denirz/Pictures/MTSMusor/DSC_0795.JPG'
+    PhotoPath='/Users/'
     print PostPhoto(AuthToken,'denirz',AlbumN,PhotoPath,'Title','DenisSummary')
 
 def ReadOptions():
@@ -215,6 +217,7 @@ def ReadOptions():
     parser.add_option("-a","--album",help="Album in Google Picasa",default='denirz Blog')
     parser.add_option("-t","--title",help="Picture Title",default='')
     parser.add_option("-s","--summary",help="Picture Summary, If empty current Date will be here",default='')
+    parser.add_option("-f","--inputfile",help="input File",default='')
     (args,additional_args)=parser.parse_args()
     if len( additional_args)==0:
         print  " no file specified"
@@ -246,7 +249,8 @@ def main():
         print "Wrong album Name"
         return
 #    print Options.album, AlbumID
-   
+         
+        
     for File_To_Submit in Files:
         if os.path.isfile(File_To_Submit):
             if Options.summary=='':
@@ -255,9 +259,10 @@ def main():
                 Summary=Options.summary
             Title=File_To_Submit.split('/')[-1]    
             HostedUrl=PostPhoto(AuthToken,Options.name,Options.album,File_To_Submit,Title,Summary)
-            print "\t",File_To_Submit,"\n", HostedUrl
+#            print "\t",File_To_Submit,"\n", HostedUrl
+            print HostedUrl
         else:
             print File_To_Submit, "is not a file" 
-        
+    
 if __name__ == '__main__':
     main()
